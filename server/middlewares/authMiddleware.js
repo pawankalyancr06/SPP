@@ -38,4 +38,21 @@ const owner = (req, res, next) => {
     }
 };
 
-module.exports = { protect, owner };
+// Alias to keep route imports consistent
+const authenticate = protect;
+
+// Generic authorize middleware for roles
+const authorize = (...roles) => (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized, no user' });
+    }
+
+    // Allow if user role is admin or one of the allowed roles
+    if (req.user.role === 'admin' || roles.includes(req.user.role)) {
+        return next();
+    }
+
+    return res.status(403).json({ message: 'Not authorized for this action' });
+};
+
+module.exports = { protect, owner, authenticate, authorize };
