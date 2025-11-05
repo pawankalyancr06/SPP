@@ -1,0 +1,22 @@
+// Razorpay service
+
+const Razorpay = require('razorpay');
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+const createOrder = async (amount, currency = 'INR') => {
+  // Create Razorpay order
+};
+
+const verifyPayment = async (paymentId, orderId, signature) => {
+  // Verify payment signature
+};
+
+module.exports = {
+  createOrder,
+  verifyPayment,
+};
+
