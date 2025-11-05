@@ -10,10 +10,19 @@
   box-sizing: border-box;
 }
 
+:root{
+  --brand-yellow: #FFD400;
+  --brand-yellow-2: #FFCC00;
+  --brand-bg: #071428; /* deep navy */
+  --text-primary: #F8FAFC; /* readable off-white */
+  --text-muted: #94A3B8;
+  --accent-orange: #FF6B35;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
-  background-color: #111827;
-  color: #F3F4F6;
+  background-color: var(--brand-bg);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -27,9 +36,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Glassmorphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* Neon glow button */
@@ -40,7 +49,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-glow:hover {
-  box-shadow: 0 0 20px rgba(0,255,135,0.8), 0 0 40px rgba(0,255,135,0.4);
+  box-shadow: 0 0 20px rgba(255,212,0,0.95), 0 0 40px rgba(255,199,0,0.45);
   transform: translateY(-2px);
 }
 
@@ -68,16 +77,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: #111827;
+  background: var(--brand-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #00FF87, #1E90FF);
+  background: linear-gradient(135deg, var(--brand-yellow), var(--brand-yellow-2));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #1E90FF, #00FF87);
+  background: linear-gradient(135deg, var(--brand-yellow-2), var(--brand-yellow));
 }
 
 /* Card hover effect */
@@ -87,12 +96,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-hover:hover {
   transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0,255,135,0.3);
+  box-shadow: 0 20px 40px rgba(7,20,40,0.45);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #00FF87, #1E90FF);
+  background: linear-gradient(135deg, var(--brand-yellow), var(--accent-orange));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

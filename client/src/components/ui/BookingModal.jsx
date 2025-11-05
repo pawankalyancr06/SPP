@@ -71,7 +71,7 @@ const BookingModal = ({ venue, onClose }) => {
             </h2>
             <button
               onClick={onClose}
-              className="text-neutral hover:text-primary transition"
+              className="text-muted hover:text-primary transition"
             >
               <X className="w-6 h-6" />
             </button>
@@ -86,8 +86,8 @@ const BookingModal = ({ venue, onClose }) => {
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
                         step >= stepItem.number
-                          ? 'bg-gradient-primary text-secondary'
-                          : 'glass text-neutral'
+              ? 'bg-gradient-primary text-secondary'
+                : 'glass text-muted'
                       }`}
                     >
                       {step > stepItem.number ? (
@@ -96,15 +96,15 @@ const BookingModal = ({ venue, onClose }) => {
                         <stepItem.icon className="w-6 h-6" />
                       )}
                     </div>
-                    <span className="text-xs mt-2 text-neutral">{stepItem.title}</span>
+                    <span className="text-xs mt-2 text-muted">{stepItem.title}</span>
                   </div>
                   {index < steps.length - 1 && (
                     <div
                       className={`flex-1 h-1 mx-2 rounded ${
-                        step > stepItem.number
-                          ? 'bg-gradient-primary'
-                          : 'bg-neutral/20'
-                      }`}
+                          step > stepItem.number
+                            ? 'bg-gradient-primary'
+                            : 'bg-muted/20'
+                        }`}
                     />
                   )}
                 </React.Fragment>
@@ -122,7 +122,7 @@ const BookingModal = ({ venue, onClose }) => {
                 className="space-y-6"
               >
                 <div>
-                  <label className="block text-sm font-bold text-neutral mb-2">Select Date</label>
+                  <label className="block text-sm font-bold text-muted mb-2">Select Date</label>
                   <input
                     type="date"
                     value={bookingData.date}
@@ -130,35 +130,35 @@ const BookingModal = ({ venue, onClose }) => {
                       setBookingData({ ...bookingData, date: e.target.value })
                     }
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full bg-secondary/50 border border-neutral/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary"
+                    className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-neutral mb-2">Start Time</label>
+                    <label className="block text-sm font-bold text-muted mb-2">Start Time</label>
                     <input
                       type="time"
                       value={bookingData.startTime}
                       onChange={(e) =>
                         setBookingData({ ...bookingData, startTime: e.target.value })
                       }
-                      className="w-full bg-secondary/50 border border-neutral/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary"
+                      className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-neutral mb-2">End Time</label>
+                    <label className="block text-sm font-bold text-muted mb-2">End Time</label>
                     <input
                       type="time"
                       value={bookingData.endTime}
                       onChange={(e) =>
                         setBookingData({ ...bookingData, endTime: e.target.value })
                       }
-                      className="w-full bg-secondary/50 border border-neutral/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary"
+                      className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-neutral mb-2">Duration (hours)</label>
+                  <label className="block text-sm font-bold text-muted mb-2">Duration (hours)</label>
                   <input
                     type="number"
                     min="1"
@@ -166,7 +166,7 @@ const BookingModal = ({ venue, onClose }) => {
                     onChange={(e) =>
                       setBookingData({ ...bookingData, duration: parseInt(e.target.value) })
                     }
-                    className="w-full bg-secondary/50 border border-neutral/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary"
+                    className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
                   />
                 </div>
                 <button

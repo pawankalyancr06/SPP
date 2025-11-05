@@ -16,10 +16,10 @@ const VenueCard = ({ venue }) => {
           alt={venue.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-secondary via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[rgba(7,20,40,0.7)] via-transparent to-transparent opacity-80" />
         <div className="absolute top-2 right-2 sm:top-3 sm:right-3 md:top-4 md:right-4 glass px-2 py-1 sm:px-3 sm:py-1 rounded-full flex items-center gap-1">
           <Star className="w-3 h-3 sm:w-4 sm:h-4 text-primary fill-primary" />
-          <span className="text-xs sm:text-sm font-bold text-white">{venue.rating}</span>
+          <span className="text-xs sm:text-sm font-bold text-neutral">{venue.rating}</span>
         </div>
         {venue.sport && (
           <div className="absolute top-2 left-2 sm:top-3 sm:left-3 md:top-4 md:left-4 glass px-2 py-1 sm:px-3 sm:py-1 rounded-full">
@@ -30,10 +30,10 @@ const VenueCard = ({ venue }) => {
 
       {/* Content */}
       <div className="p-4 sm:p-5 md:p-6">
-        <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 text-white group-hover:text-primary transition-colors line-clamp-1">
+        <h3 className="text-lg sm:text-xl font-heading font-bold mb-2 text-neutral group-hover:text-primary transition-colors line-clamp-1">
           {venue.name}
         </h3>
-        <div className="flex items-center gap-2 text-neutral mb-3 md:mb-4">
+        <div className="flex items-center gap-2 text-muted mb-3 md:mb-4">
           <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
           <span className="text-xs sm:text-sm line-clamp-1">{venue.location}</span>
         </div>

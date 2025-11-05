@@ -8,11 +8,11 @@ const BookingCard = ({ booking }) => {
       case 'confirmed':
         return 'text-primary';
       case 'cancelled':
-        return 'text-accent1';
+        return 'text-danger';
       case 'completed':
         return 'text-accent2';
       default:
-        return 'text-neutral';
+        return 'text-muted';
     }
   };
 
@@ -35,7 +35,7 @@ const BookingCard = ({ booking }) => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-heading font-bold text-white">
+            <h3 className="text-xl font-heading font-bold text-neutral">
               {booking.venueName || booking.venue?.name || 'Venue'}
             </h3>
             <div className="flex items-center gap-1">
@@ -69,7 +69,7 @@ const BookingCard = ({ booking }) => {
             ₹{booking.totalAmount || 0}
           </div>
           {booking.status === 'confirmed' && (
-            <button className="btn-glow glass border border-accent1/50 text-accent1 px-4 py-2 rounded-lg text-sm font-bold hover:border-accent1">
+            <button className="btn-glow glass border border-danger/50 text-danger px-4 py-2 rounded-lg text-sm font-bold hover:border-danger">
               Cancel
             </button>
           )}

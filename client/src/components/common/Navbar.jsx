@@ -28,7 +28,7 @@ const Navbar = () => {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-secondary/80 backdrop-blur-md shadow-lg shadow-primary/20'
+          ? 'bg-secondary/95 backdrop-blur-md shadow-lg shadow-primary/10'
           : 'bg-transparent'
       }`}
     >
@@ -36,17 +36,14 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="relative">
-              <Play className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-primary" fill="currentColor" />
-              <motion.div
-                className="absolute inset-0 bg-primary rounded-full blur-md opacity-50"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
+            <div className="relative flex items-center gap-2">
+              <div className="relative w-8 h-8 flex items-center justify-center rounded-full bg-gradient-primary">
+                <Play className="w-5 h-5 text-secondary" fill="currentColor" />
+              </div>
+              <span className="text-xl sm:text-2xl font-heading font-bold gradient-text">
+                SportifyPro
+              </span>
             </div>
-            <span className="text-xl sm:text-2xl font-heading font-bold gradient-text">
-              SportifyPro
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,7 +55,7 @@ const Navbar = () => {
                 className={`relative text-sm font-semibold transition-colors whitespace-nowrap ${
                   location.pathname === link.path
                     ? 'text-primary'
-                    : 'text-neutral hover:text-primary'
+                    : 'text-muted hover:text-primary'
                 }`}
               >
                 {link.label}
