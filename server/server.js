@@ -1,34 +1,37 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
+const morgan = 'morgan';
 const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 
-// Load environment variables
-dotenv.config();
-
-// Connect to database
-connectDB();
-
+// Initialize Express App
 const app = express();
 
-// Middleware
+// Connect to Database
+connectDB();
+
+// Core Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev')); // Logger for development
 
-// Routes
+// API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/venues', require('./routes/venueRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 
-// Error handler
+// Simple health check route
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Welcome to the SportifyPro API!' });
+});
+
+// Custom Error Handler Middleware (must be last)
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server is fired up on port ${PORT}`);
 });
-

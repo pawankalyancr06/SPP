@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/common/Navbar';
+import FloatingButton from './components/common/FloatingButton';
 import Home from './pages/Home';
 import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
@@ -27,6 +28,7 @@ function App() {
           <Route path="/owner/dashboard" element={<OwnerDashboard />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
+        <FloatingButton />
       </Router>
     </AuthProvider>
   );

@@ -1,32 +1,20 @@
-// Venue model
-
 const mongoose = require('mongoose');
 
-const venueSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-  images: [String],
-  amenities: [String],
-  capacity: Number,
-  availableSlots: [Date],
-}, {
-  timestamps: true,
+const timeSlotSchema = new mongoose.Schema({
+    startTime: { type: String, required: true }, // e.g., "09:00"
+    endTime: { type: String, required: true },   // e.g., "10:00"
+    price: { type: Number, required: true },
 });
 
-module.exports = mongoose.model('Venue', venueSchema);
+const venueSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    location: { type: String, required: true },
+    images: [{ type: String }],
+    sport: { type: String, enum: ['Badminton', 'Football', 'Cricket', 'Gym'], required: true },
+    description: { type: String },
+    slots: [timeSlotSchema],
+    isApproved: { type: Boolean, default: false }, // For admin approval
+}, { timestamps: true });
 
+module.exports = mongoose.model('Venue', venueSchema);
