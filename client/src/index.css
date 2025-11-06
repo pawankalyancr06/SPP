@@ -10,13 +10,12 @@
   box-sizing: border-box;
 }
 
-:root{
-  --brand-yellow: #FFD400;
-  --brand-yellow-2: #FFCC00;
-  --brand-bg: #071428; /* deep navy */
-  --text-primary: #F8FAFC; /* readable off-white */
-  --text-muted: #94A3B8;
-  --accent-orange: #FF6B35;
+::root{
+  --brand-primary: #FFD400; /* vibrant yellow */
+  --accent: #FFB800; /* darker yellow/gold */
+  --brand-bg: #000000; /* black */
+  --text-primary: #FFFFFF; /* white */
+  --text-muted: #9CA3AF;
 }
 
 body {
@@ -28,6 +27,21 @@ body {
   overflow-x: hidden;
 }
 
+/* Global background image with dark overlay for readability */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)),
+    url('/src/assets/images/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: none;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Montserrat', sans-serif;
   font-weight: 800;
@@ -36,9 +50,21 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Glassmorphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 212, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 212, 0, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(255, 212, 0, 0.2);
 }
 
 /* Neon glow button */
@@ -49,7 +75,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-glow:hover {
-  box-shadow: 0 0 20px rgba(255,212,0,0.95), 0 0 40px rgba(255,199,0,0.45);
+  box-shadow: 0 0 20px rgba(255,212,0,0.95), 0 0 40px rgba(255,184,0,0.45);
   transform: translateY(-2px);
 }
 
@@ -81,12 +107,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--brand-yellow), var(--brand-yellow-2));
+  background: linear-gradient(135deg, var(--brand-primary), var(--accent));
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, var(--brand-yellow-2), var(--brand-yellow));
+  background: linear-gradient(135deg, var(--accent), var(--brand-primary));
 }
 
 /* Card hover effect */
@@ -96,15 +122,60 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-hover:hover {
   transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(7,20,40,0.45);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(255,212,0,0.2);
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--brand-yellow), var(--accent-orange));
+  background: linear-gradient(135deg, #FFD400, #FFB800, #FF9500);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: gradient-shift 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Colorful gradient backgrounds */
+.gradient-bg-1 {
+  background: linear-gradient(135deg, #FFD400 0%, #FFB800 50%, #FF9500 100%);
+}
+
+.gradient-bg-2 {
+  background: linear-gradient(135deg, #FF6B35 0%, #F7931E 50%, #FFD400 100%);
+}
+
+.gradient-bg-3 {
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 50%, #F093FB 100%);
+}
+
+/* Animated gradient border */
+.gradient-border {
+  position: relative;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #FFD400, #FFB800, #FF6B35, #FFD400);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-border 3s linear infinite;
+}
+
+@keyframes rotate-border {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 /* Line clamp utilities */

@@ -16,6 +16,8 @@ const Signup = () => {
     role: 'user',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [verificationUrl, setVerificationUrl] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -30,15 +32,29 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      await register(formData);
-      const response = await login({
-        email: formData.email,
-        password: formData.password,
-      });
-      authLogin(response.user);
-      navigate('/');
+      const response = await register(formData);
+      setFormData({ name: '', email: '', password: '', confirmPassword: '', role: 'user' });
+      setError('');
+      setSuccess(response.message);
+      // Store verification URL if provided (dev mode)
+      if (response.verificationUrl) {
+        setVerificationUrl(response.verificationUrl);
+      }
+      // If auto-verified in dev mode, redirect to login after 2 seconds
+      if (response.devMode) {
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      // Avoid leaking user existence info
+      if (err.response?.status === 409) {
+        setError('An account with this email already exists. Please log in.');
+      } else {
+        setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      }
+      setSuccess('');
+      setVerificationUrl('');
     } finally {
       setLoading(false);
     }
@@ -63,8 +79,27 @@ const Signup = () => {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-accent1/20 border border-accent1 rounded-xl text-accent1 text-sm">
+          <div className="mb-6 p-4 bg-danger/20 border border-danger rounded-xl text-danger text-sm">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-success/20 border border-success rounded-xl text-success text-sm space-y-2">
+            <p>{success}</p>
+            {verificationUrl && (
+              <div className="mt-3 p-3 bg-secondary/50 rounded-lg">
+                <p className="text-xs text-neutral mb-2">Development Mode - Verification URL:</p>
+                <a
+                  href={verificationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary text-xs break-all hover:underline"
+                >
+                  {verificationUrl}
+                </a>
+              </div>
+            )}
           </div>
         )}
 

@@ -55,4 +55,21 @@ const authorize = (...roles) => (req, res, next) => {
     return res.status(403).json({ message: 'Not authorized for this action' });
 };
 
-module.exports = { protect, owner, authenticate, authorize };
+// Optional authentication - doesn't fail if no token, but sets req.user if token is valid
+const optionalAuth = async (req, res, next) => {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.id).select('-password');
+        } catch (error) {
+            // Silently fail - user is not authenticated but can still access public routes
+            req.user = null;
+        }
+    }
+    next();
+};
+
+module.exports = { protect, owner, authenticate, authorize, optionalAuth };

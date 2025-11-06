@@ -3,6 +3,11 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, CheckCircle, XCircle } from 'lucide-react';
 
 const BookingCard = ({ booking }) => {
+  // Map paymentStatus to booking status for display
+  const status = booking.paymentStatus === 'Completed' ? 'confirmed' : 
+                 booking.paymentStatus === 'Failed' ? 'cancelled' : 
+                 booking.paymentStatus === 'Pending' ? 'pending' : booking.status || 'pending';
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
@@ -39,9 +44,9 @@ const BookingCard = ({ booking }) => {
               {booking.venueName || booking.venue?.name || 'Venue'}
             </h3>
             <div className="flex items-center gap-1">
-              {getStatusIcon(booking.status)}
-              <span className={`text-sm font-bold ${getStatusColor(booking.status)}`}>
-                {booking.status?.toUpperCase()}
+              {getStatusIcon(status)}
+              <span className={`text-sm font-bold ${getStatusColor(status)}`}>
+                {status?.toUpperCase()}
               </span>
             </div>
           </div>
@@ -53,7 +58,7 @@ const BookingCard = ({ booking }) => {
             <div className="flex items-center gap-2 text-neutral">
               <Clock className="w-4 h-4" />
               <span>
-                {booking.startTime} - {booking.endTime}
+                {booking.slot?.startTime || booking.startTime} - {booking.slot?.endTime || booking.endTime}
               </span>
             </div>
             {booking.venue?.location && (
@@ -68,7 +73,7 @@ const BookingCard = ({ booking }) => {
           <div className="text-2xl font-bold text-primary mb-2">
             ₹{booking.totalAmount || 0}
           </div>
-          {booking.status === 'confirmed' && (
+          {status === 'confirmed' && (
             <button className="btn-glow glass border border-danger/50 text-danger px-4 py-2 rounded-lg text-sm font-bold hover:border-danger">
               Cancel
             </button>

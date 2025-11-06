@@ -19,20 +19,25 @@ const BookingModal = ({ venue, onClose }) => {
 
   const handleBooking = async () => {
     try {
-      const totalAmount = venue.price * bookingData.duration;
+      // Calculate price from venue slots or use flat price
+      const slotPrice = venue.slots?.find(s => s.startTime === bookingData.startTime && s.endTime === bookingData.endTime)?.price || venue.price;
+      const totalAmount = slotPrice * bookingData.duration;
+      
       const booking = await createBooking({
-        venue: venue.id,
+        venue: venue._id || venue.id,
         date: bookingData.date,
-        startTime: bookingData.startTime,
-        endTime: bookingData.endTime,
+        slot: {
+          startTime: bookingData.startTime,
+          endTime: bookingData.endTime,
+        },
         totalAmount,
       });
-      setBookingId(booking.id);
+      setBookingId(booking._id || booking.id);
       setBookingSuccess(true);
       setStep(4);
     } catch (error) {
       console.error('Error creating booking:', error);
-      alert('Failed to create booking. Please try again.');
+      alert(error.response?.data?.message || 'Failed to create booking. Please try again.');
     }
   };
 
@@ -43,7 +48,9 @@ const BookingModal = ({ venue, onClose }) => {
     { number: 4, title: 'Success', icon: CheckCircle },
   ];
 
-  const totalAmount = venue.price * (bookingData.duration || 1);
+  // Calculate price from selected slot or use venue base price
+  const slotPrice = venue.slots?.find(s => s.startTime === bookingData.startTime && s.endTime === bookingData.endTime)?.price || venue.price || 0;
+  const totalAmount = slotPrice * (bookingData.duration || 1);
 
   return (
     <AnimatePresence>
@@ -133,42 +140,76 @@ const BookingModal = ({ venue, onClose }) => {
                     className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                {venue.slots && venue.slots.length > 0 ? (
                   <div>
-                    <label className="block text-sm font-bold text-muted mb-2">Start Time</label>
-                    <input
-                      type="time"
-                      value={bookingData.startTime}
-                      onChange={(e) =>
-                        setBookingData({ ...bookingData, startTime: e.target.value })
-                      }
-                      className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
-                    />
+                    <label className="block text-sm font-bold text-muted mb-2">Select Time Slot</label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {venue.slots.map((slot, index) => (
+                        <button
+                          key={slot._id || index}
+                          type="button"
+                          onClick={() => {
+                            setBookingData({
+                              ...bookingData,
+                              startTime: slot.startTime,
+                              endTime: slot.endTime,
+                              duration: 1,
+                            });
+                          }}
+                          className={`p-3 rounded-xl border-2 transition ${
+                            bookingData.startTime === slot.startTime && bookingData.endTime === slot.endTime
+                              ? 'border-primary bg-primary/20'
+                              : 'border-neutral/20 hover:border-primary/50'
+                          }`}
+                        >
+                          <div className="text-sm font-bold text-white mb-1">
+                            {slot.startTime} - {slot.endTime}
+                          </div>
+                          <div className="text-xs text-primary">₹{slot.price}/hr</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-muted mb-2">End Time</label>
-                    <input
-                      type="time"
-                      value={bookingData.endTime}
-                      onChange={(e) =>
-                        setBookingData({ ...bookingData, endTime: e.target.value })
-                      }
-                      className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-muted mb-2">Duration (hours)</label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={bookingData.duration}
-                    onChange={(e) =>
-                      setBookingData({ ...bookingData, duration: parseInt(e.target.value) })
-                    }
-                    className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
-                  />
-                </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-muted mb-2">Start Time</label>
+                        <input
+                          type="time"
+                          value={bookingData.startTime}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, startTime: e.target.value })
+                          }
+                          className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-muted mb-2">End Time</label>
+                        <input
+                          type="time"
+                          value={bookingData.endTime}
+                          onChange={(e) =>
+                            setBookingData({ ...bookingData, endTime: e.target.value })
+                          }
+                          className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-muted mb-2">Duration (hours)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={bookingData.duration}
+                        onChange={(e) =>
+                          setBookingData({ ...bookingData, duration: parseInt(e.target.value) })
+                        }
+                        className="w-full bg-secondary/50 border border-muted/20 rounded-xl px-4 py-3 text-neutral focus:outline-none focus:border-primary"
+                      />
+                    </div>
+                  </>
+                )}
                 <button
                   onClick={() => setStep(2)}
                   disabled={!bookingData.date || !bookingData.startTime || !bookingData.endTime}

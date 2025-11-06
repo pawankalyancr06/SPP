@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, X, Play } from 'lucide-react';
+import { Menu, X, Play, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
+  // Handle logout and redirect
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,12 +23,17 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/venues', label: 'Venues' },
-    { path: '/profile', label: 'Profile' },
-  ];
+  const navLinks = user?.role === 'owner' 
+    ? [
+        { path: '/owner/dashboard', label: 'Dashboard' },
+        { path: '/owner/bookings', label: 'Bookings' },
+        { path: '/profile', label: 'Profile' },
+      ]
+    : [
+        { path: '/venues', label: 'Venues' },
+        { path: '/favorites', label: 'Favorites' },
+        { path: '/profile', label: 'Profile' },
+      ];
 
   return (
     <motion.nav
@@ -38,7 +51,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-2 group">
             <div className="relative flex items-center gap-2">
               <div className="relative w-8 h-8 flex items-center justify-center rounded-full bg-gradient-primary">
-                <Play className="w-5 h-5 text-secondary" fill="currentColor" />
+                <Play className="w-5 h-5 text-secondary md:text-secondary" fill="currentColor" />
               </div>
               <span className="text-xl sm:text-2xl font-heading font-bold gradient-text">
                 SportifyPro
@@ -67,12 +80,23 @@ const Navbar = () => {
                 )}
               </Link>
             ))}
-            <Link
-              to="/venues"
-              className="btn-glow bg-gradient-primary text-secondary px-4 py-2 lg:px-6 lg:py-2 rounded-full font-bold text-xs lg:text-sm hover:shadow-glow transition"
-            >
-              Book Now
-            </Link>
+            {user?.role !== 'owner' && (
+              <Link
+                to="/venues"
+                className="btn-glow bg-gradient-primary text-secondary px-4 py-2 lg:px-6 lg:py-2 rounded-full font-bold text-xs lg:text-sm hover:shadow-glow transition"
+              >
+                Book Now
+              </Link>
+            )}
+            {/* Show logout if authenticated */}
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="ml-2 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-accent1 border border-accent1/50 glass hover:border-accent1 transition text-sm"
+              >
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -106,13 +130,27 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/venues"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="btn-glow inline-block bg-gradient-primary text-secondary px-6 py-2 rounded-full font-bold"
-            >
-              Book Now
-            </Link>
+            {user?.role !== 'owner' && (
+              <Link
+                to="/venues"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="btn-glow inline-block bg-gradient-primary text-secondary px-6 py-2 rounded-full font-bold"
+              >
+                Book Now
+              </Link>
+            )}
+            {/* Show logout if authenticated */}
+            {isAuthenticated && (
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="mt-2 flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-accent1 border border-accent1/50 glass hover:border-accent1 transition text-lg w-full justify-center"
+              >
+                <LogOut className="w-5 h-5" /> Logout
+              </button>
+            )}
           </motion.div>
         )}
       </div>

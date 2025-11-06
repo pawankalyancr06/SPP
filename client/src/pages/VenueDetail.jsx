@@ -1,41 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Star, Clock, Calendar, Users, Phone } from 'lucide-react';
+import { MapPin, Star, Clock, Calendar, Users, Phone, Heart } from 'lucide-react';
 import { getVenueById } from '../api/venues';
 import BookingModal from '../components/ui/BookingModal';
+import { useAuth } from '../contexts/AuthContext';
+import { addFavorite, removeFavorite, checkFavorite } from '../api/favorites';
 
 const VenueDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [venue, setVenue] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
 
   useEffect(() => {
     fetchVenue();
   }, [id]);
 
+  useEffect(() => {
+    if (venue && user?.role === 'user') {
+      checkFavorite(venue._id || venue.id).then(setIsFavorited).catch(() => setIsFavorited(false));
+    }
+  }, [venue, user]);
+
+  const handleFavorite = async () => {
+    if (!user || user.role !== 'user' || !venue) return;
+
+    setFavoriteLoading(true);
+    try {
+      if (isFavorited) {
+        await removeFavorite(venue._id || venue.id);
+        setIsFavorited(false);
+      } else {
+        await addFavorite(venue._id || venue.id);
+        setIsFavorited(true);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    } finally {
+      setFavoriteLoading(false);
+    }
+  };
+
   const fetchVenue = async () => {
     try {
       const data = await getVenueById(id);
-      setVenue(data);
+      // Normalize venue data: ensure _id and id exist, add price from slots
+      const normalizedVenue = {
+        ...data,
+        id: data._id || data.id,
+        _id: data._id || data.id,
+        price: data.slots?.length > 0 
+          ? data.slots.reduce((sum, slot) => sum + slot.price, 0) / data.slots.length 
+          : data.price || 2000,
+        rating: data.rating || 4.5,
+        image: data.images?.[0] || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+        description: data.description || 'Premium sports venue with top-notch facilities',
+        amenities: data.amenities || ['Parking', 'Changing Rooms', 'Water Facility', 'Lighting'],
+      };
+      setVenue(normalizedVenue);
     } catch (error) {
       console.error('Error fetching venue:', error);
-      // Fallback mock data
-      setVenue({
-        id: 1,
-        name: 'Elite Football Turf',
-        location: 'Mumbai',
-        price: 2500,
-        rating: 4.8,
-        image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-        sport: 'Football',
-        description: 'Premium football turf with professional-grade facilities',
-        amenities: ['Parking', 'Changing Rooms', 'Water Facility', 'Lighting'],
-        capacity: 22,
-        availableSlots: ['09:00-10:00', '10:00-11:00', '11:00-12:00', '14:00-15:00'],
-      });
+      setVenue(null);
     } finally {
       setLoading(false);
     }
@@ -97,9 +127,22 @@ const VenueDetail = () => {
             className="space-y-4 md:space-y-6"
           >
             <div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-black mb-3 gradient-text">
-                {venue.name}
-              </h1>
+              <div className="flex items-center justify-between mb-3">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-black gradient-text">
+                  {venue.name}
+                </h1>
+                {user?.role === 'user' && (
+                  <button
+                    onClick={handleFavorite}
+                    disabled={favoriteLoading}
+                    className={`glass p-2 sm:p-3 rounded-full transition ${
+                      isFavorited ? 'text-danger' : 'text-neutral hover:text-danger'
+                    }`}
+                  >
+                    <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isFavorited ? 'fill-danger' : ''}`} />
+                  </button>
+                )}
+              </div>
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-neutral mb-4 text-sm sm:text-base">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
@@ -145,16 +188,24 @@ const VenueDetail = () => {
             </div>
 
             <div className="glass rounded-xl md:rounded-2xl p-4 sm:p-5 md:p-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 text-neutral text-sm sm:text-base">
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                  <span>Capacity: {venue.capacity || 'N/A'}</span>
+              <h3 className="text-lg sm:text-xl font-heading font-bold mb-3 md:mb-4">Available Time Slots</h3>
+              {venue.slots && venue.slots.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {venue.slots.map((slot, index) => (
+                    <div
+                      key={slot._id || index}
+                      className="glass rounded-lg p-3 text-center border border-neutral/20 hover:border-primary/50 transition"
+                    >
+                      <div className="text-sm font-bold text-primary mb-1">
+                        {slot.startTime} - {slot.endTime}
+                      </div>
+                      <div className="text-xs text-neutral">₹{slot.price}/hr</div>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                  <span>Available Slots</span>
-                </div>
-              </div>
+              ) : (
+                <p className="text-neutral text-sm">No slots available. Please contact the owner.</p>
+              )}
             </div>
           </motion.div>
         </div>

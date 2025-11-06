@@ -4,7 +4,8 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const getVenues = async () => {
   try {
-    const response = await axios.get(`${API_URL}/venues`);
+    // Fetch only approved venues for regular users
+    const response = await axios.get(`${API_URL}/venues?approved=true`);
     return response.data;
   } catch (error) {
     console.error('Error fetching venues:', error);
@@ -31,6 +32,32 @@ export const createVenue = async (venueData) => {
     return response.data;
   } catch (error) {
     console.error('Error creating venue:', error);
+    throw error;
+  }
+};
+
+export const approveVenue = async (venueId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.patch(`${API_URL}/venues/${venueId}/approve`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error approving venue:', error);
+    throw error;
+  }
+};
+
+export const rejectVenue = async (venueId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.patch(`${API_URL}/venues/${venueId}/reject`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error rejecting venue:', error);
     throw error;
   }
 };

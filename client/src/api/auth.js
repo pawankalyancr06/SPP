@@ -35,3 +35,13 @@ export const getCurrentUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };
+
+export const resendVerification = async (email) => {
+  try {
+    const response = await axios.post(`${API_URL}/auth/resend-verification`, { email });
+    return response.data;
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    throw error;
+  }
+};
